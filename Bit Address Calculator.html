@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8051 Bit Address Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #121212;
+      color: #ffffff;
+      text-align: center;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      background: #1e1e1e;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+    button {
+      cursor: pointer;
+    }
+    #result, #autoList {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #autoList {
+      text-align: left;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 10px;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>8051 Bit Address থেকে RAM Byte ও Bit খুঁজুন</h2>
+  <p>Bit Address (Hexadecimal) দিন: <input type="text" id="bitAddress" placeholder="যেমনঃ 42"> <button onclick="calculate()">দেখাও</button></p>
+  <div id="result"></div>
+
+  <hr>
+  <h3>🎯 00H থেকে 7FH পর্যন্ত অটো লিস্ট</h3>
+  <button onclick="generateList()">Auto Generate List</button>
+  <div id="autoList"></div>
+
+  <script>
+    function calculate() {
+      const hex = document.getElementById("bitAddress").value.trim();
+      const result = document.getElementById("result");
+
+      if (!/^([0-7][0-9A-Fa-f])$/.test(hex)) {
+        result.style.color = 'red';
+        result.innerText = "❌ দয়া করে 00H থেকে 7FH এর মধ্যে হেক্স ভ্যালু দিন";
+        return;
+      }
+
+      const bitAddr = parseInt(hex, 16);
+      const byteOffset = Math.floor(bitAddr / 8);
+      const bitPos = bitAddr % 8;
+      const ramAddr = 0x20 + byteOffset;
+
+      result.style.color = 'lightgreen';
+      result.innerText = `✅ Bit Address ${hex.toUpperCase()} → RAM Byte Address: ${ramAddr.toString(16).toUpperCase()}H, Bit: D${bitPos}`;
+    }
+
+    function generateList() {
+      let output = '<ul>';
+      for (let bitAddr = 0; bitAddr <= 0x7F; bitAddr++) {
+        let byteOffset = Math.floor(bitAddr / 8);
+        let bitPos = bitAddr % 8;
+        let ramAddr = 0x20 + byteOffset;
+        output += `<li>Bit ${bitAddr.toString(16).toUpperCase().padStart(2, '0')}H → Byte: ${ramAddr.toString(16).toUpperCase()}H, Bit: D${bitPos}</li>`;
+      }
+      output += '</ul>';
+      document.getElementById("autoList").innerHTML = output;
+    }
+  </script>
+</body>
+</html>
